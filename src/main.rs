@@ -1,8 +1,6 @@
-extern crate rand;
-
 use std::net::{TcpListener, TcpStream};
 use std::thread;
-use rand::{thread_rng, Rng};
+use rand::Rng;
 use std::time::Duration;
 use std::io::{Read, Write, Error};
 
@@ -20,7 +18,7 @@ fn handle_client(mut stream: TcpStream) -> Result<(), Error> {
             return Ok(());
         }
         // thread_rng selects an integer between 0 and 5 randomly
-        let sleep = Duration::from_secs(*thread_rng().choose(&[0, 1, 2, 3, 4, 5]).unwrap());
+        let sleep = Duration::from_secs(rand::thread_rng().gen_range(0, 5));
         println!("Sleeping for {:?} before replying", sleep);
         // sleeps for the randome time duration using std::thread::sleep
         std::thread::sleep(sleep);
@@ -33,7 +31,7 @@ fn main() {
     // TcpListenner represents a TCP socket that is listoning for incoming connections from client
     // bind the local IP and port pair to create a local listening socket
     // expect returns the listener if there is no errors, otherwise, it panics with the error message
-    let listener = TcpListener::bind("0.0.0.0:8888").expect("Could not bind");
+    let listener = TcpListener::bind("127.0.0.1:8888").expect("Could not bind");
     // incoming returns an iterator over streams that have connected to the server
     for stream in listener.incoming() {
         match stream {

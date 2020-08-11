@@ -1,10 +1,15 @@
 use std::net::TcpStream;
 use std::str;
 use std::io::{self, BufRead, BufReader, Write};
+use std::time::Duration;
+use std::net::SocketAddr;
 
 fn main() {
-    // sets up a connection to the server using TcpStream::connect
-    let mut stream = TcpStream::connect("127.0.0.1:8888").expect("Could not connect to server");
+    let remote: SocketAddr = "127.0.0.1:8888".parse().unwrap();
+    // wraps the Duration in a Some before passing in
+    let mut stream = TcpStream::connect_timeout(&remote, Duration::from_secs(1)).expect("Could not connect to server");
+    // uses set_read_timeout to set the timeout to 4s, the client will abort the connection
+    stream.set_read_timeout(Some(Duration::from_secs(4))).expect("Could not set a read timeout");
     loop {
         // initializes an empty string to read user input locally
         let mut input = String::new();
