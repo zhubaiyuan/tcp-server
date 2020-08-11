@@ -1,11 +1,13 @@
+extern crate rand;
+
 use std::net::{TcpListener, TcpStream};
 use std::thread;
+use rand::{thread_rng, Rng};
+use std::time::Duration;
 use std::io::{Read, Write, Error};
 
 // handles a single client
 fn handle_client(mut stream: TcpStream) -> Result<(), Error> {
-    // prints the remote endpoint address and port
-    println!("Incoming connection from: {}", stream.peer_addr()?);
     // a buffer holds data temporarily
     let mut buf = [0; 512];
     // reads all data in the stream
@@ -17,6 +19,11 @@ fn handle_client(mut stream: TcpStream) -> Result<(), Error> {
         if bytes_read == 0 {
             return Ok(());
         }
+        // thread_rng selects an integer between 0 and 5 randomly
+        let sleep = Duration::from_secs(*thread_rng().choose(&[0, 1, 2, 3, 4, 5]).unwrap());
+        println!("Sleeping for {:?} before replying", sleep);
+        // sleeps for the randome time duration using std::thread::sleep
+        std::thread::sleep(sleep);
         // writes the same data back to the stream with the slice
         stream.write(&buf[..bytes_read])?;
     }
